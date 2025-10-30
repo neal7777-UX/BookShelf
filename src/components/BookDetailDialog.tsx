@@ -62,7 +62,7 @@ export function BookDetailDialog({ open, onOpenChange, book, onSave }: BookDetai
             </div>
             <div className="space-y-1">
               <Label>評分</Label>
-              <RatingStars value={local.rating ?? 0} onChange={(v) => setLocal({ ...local, rating: v })} size={24} />
+              <RatingStars value={local.rating ?? 0} size={24} />
             </div>
             <div className="space-y-1">
               <Label>心得</Label>

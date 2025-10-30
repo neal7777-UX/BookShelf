@@ -19,6 +19,7 @@ export function RatingStars({ value, onChange, size = 20 }: RatingStarsProps) {
             key={star}
             size={size}
             className={active ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}
+            style={isInteractive ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
             onClick={isInteractive ? () => onChange?.(star) : undefined}
           />
         )

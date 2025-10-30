@@ -7,6 +7,7 @@ interface BookCardProps {
   book: Book;
   onClick?: () => void;
   onDelete?: (id: string) => void;
+  onRatingChange?: (book: Book, rating: number) => void;
 }
 
 const getStatusLabel = (status: Book['status']) => {
@@ -27,7 +28,7 @@ const getStatusColor = (status: Book['status']) => {
   return colorMap[status];
 };
 
-export const BookCard = ({ book, onClick, onDelete }: BookCardProps) => {
+export const BookCard = ({ book, onClick, onDelete, onRatingChange }: BookCardProps) => {
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (confirm(`確定要刪除書籍「${book.title}」嗎？`)) {
@@ -54,7 +55,11 @@ export const BookCard = ({ book, onClick, onDelete }: BookCardProps) => {
             <h3 className="text-base font-semibold line-clamp-2 pr-6">{book.title}</h3>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <RatingStars value={book.rating ?? 0} size={14} />
+            <RatingStars 
+              value={book.rating ?? 0} 
+              size={14} 
+              onChange={onRatingChange ? (value) => onRatingChange(book, value) : undefined} 
+            />
             {onDelete && (
               <button
                 className="ml-1 p-1 rounded hover:bg-red-100 text-gray-500 hover:text-red-600 transition-colors"

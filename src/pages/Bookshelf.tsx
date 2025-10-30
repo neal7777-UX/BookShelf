@@ -64,6 +64,10 @@ export const Bookshelf = () => {
       .single();
     if (!error && data) {
       setBooks((prev) => prev.map((b) => (b.id === updated.id ? (data as Book) : b)));
+      // 若更動狀態分類，直接切換到該頁籤
+      if (activeTab !== data.status && ['reading', 'unread', 'completed'].includes(data.status)) {
+        setActiveTab(data.status);
+      }
     }
   };
 
@@ -73,6 +77,13 @@ export const Bookshelf = () => {
     if (selected?.id === id) {
       setSelected(null);
       setDetailOpen(false);
+    }
+  };
+
+  const handleRatingChange = async (book: Book, rating: number) => {
+    const { data, error } = await supabase.from('books').update({ rating }).eq('id', book.id).select().single();
+    if (!error && data) {
+      setBooks((prev) => prev.map((b) => (b.id === book.id ? { ...b, rating } : b)));
     }
   };
 
@@ -101,6 +112,7 @@ export const Bookshelf = () => {
           onTabChange={setActiveTab}
           onSelectBook={handleSelectBook}
           onDeleteBook={handleDeleteBook}
+          onRatingChange={handleRatingChange}
         />
 
         <BookDetailDialog

@@ -8,9 +8,10 @@ interface TabsFilterProps {
   onTabChange: (value: string) => void;
   onSelectBook?: (book: Book) => void;
   onDeleteBook?: (id: string) => void;
+  onRatingChange?: (book: Book, rating: number) => void;
 }
 
-const renderBooksList = (books: Book[], onSelect?: (book: Book) => void, onDelete?: (id: string) => void) => {
+const renderBooksList = (books: Book[], onSelect?: (book: Book) => void, onDelete?: (id: string) => void, onRatingChange?: (book: Book, rating: number) => void) => {
   if (books.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -28,13 +29,14 @@ const renderBooksList = (books: Book[], onSelect?: (book: Book) => void, onDelet
           book={book} 
           onClick={() => onSelect?.(book)} 
           onDelete={onDelete}
+          onRatingChange={onRatingChange}
         />
       ))}
     </div>
   );
 };
 
-export const TabsFilter = ({ books, activeTab, onTabChange, onSelectBook, onDeleteBook }: TabsFilterProps) => {
+export const TabsFilter = ({ books, activeTab, onTabChange, onSelectBook, onDeleteBook, onRatingChange }: TabsFilterProps) => {
   const allBooks = books;
   const readingBooks = books.filter((book) => book.status === 'reading');
   const unreadBooks = books.filter((book) => book.status === 'unread');
@@ -50,19 +52,19 @@ export const TabsFilter = ({ books, activeTab, onTabChange, onSelectBook, onDele
       </TabsList>
       
       <TabsContent value="all" className="mt-0">
-        {renderBooksList(allBooks, onSelectBook, onDeleteBook)}
+        {renderBooksList(allBooks, onSelectBook, onDeleteBook, onRatingChange)}
       </TabsContent>
       
       <TabsContent value="reading" className="mt-0">
-        {renderBooksList(readingBooks, onSelectBook, onDeleteBook)}
+        {renderBooksList(readingBooks, onSelectBook, onDeleteBook, onRatingChange)}
       </TabsContent>
       
       <TabsContent value="unread" className="mt-0">
-        {renderBooksList(unreadBooks, onSelectBook, onDeleteBook)}
+        {renderBooksList(unreadBooks, onSelectBook, onDeleteBook, onRatingChange)}
       </TabsContent>
       
       <TabsContent value="completed" className="mt-0">
-        {renderBooksList(completedBooks, onSelectBook, onDeleteBook)}
+        {renderBooksList(completedBooks, onSelectBook, onDeleteBook, onRatingChange)}
       </TabsContent>
     </Tabs>
   );
