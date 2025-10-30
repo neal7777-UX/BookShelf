@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Book } from '@/types/book'
+import { Book, BookStatus } from '@/types/book'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -47,6 +47,18 @@ export function BookDetailDialog({ open, onOpenChange, book, onSave }: BookDetai
             <div className="space-y-1">
               <Label>作者</Label>
               <Input value={local.author} onChange={(e) => setLocal({ ...local, author: e.target.value })} />
+            </div>
+            <div className="space-y-1">
+              <Label>閱讀狀態</Label>
+              <select
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={local.status}
+                onChange={(e) => setLocal({ ...local, status: e.target.value as BookStatus })}
+              >
+                <option value="unread">未讀</option>
+                <option value="reading">正在讀</option>
+                <option value="completed">已完成</option>
+              </select>
             </div>
             <div className="space-y-1">
               <Label>評分</Label>

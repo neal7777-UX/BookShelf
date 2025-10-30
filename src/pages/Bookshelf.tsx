@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { BookDetailDialog } from '@/components/BookDetailDialog';
 import { supabase } from '@/lib/supabase';
+import { Toast } from '@/components/Toast';
 
 export const Bookshelf = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -13,6 +14,7 @@ export const Bookshelf = () => {
   const [detailOpen, setDetailOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [selected, setSelected] = useState<Book | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -36,6 +38,8 @@ export const Bookshelf = () => {
     if (!error && data) {
       setBooks((prev) => [data as Book, ...prev]);
       setAddOpen(false);
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
     }
   };
 
@@ -74,6 +78,7 @@ export const Bookshelf = () => {
 
   return (
     <div className="min-h-screen bookshelf-bg py-8">
+      <Toast message="新增成功" visible={toastVisible} />
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-800">我的書架</h1>
