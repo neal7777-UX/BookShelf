@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Book } from '@/types/book';
 import { supabase } from '@/lib/supabase';
+import { ImagePlus } from 'lucide-react';
 
 interface BookFormProps {
   onAddBook: (book: Omit<Book, 'id'>) => void;
@@ -15,7 +16,6 @@ export const BookForm = ({ onAddBook }: BookFormProps) => {
   const [author, setAuthor] = useState('');
   const [cover, setCover] = useState('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const readFileAsDataUrl = (file: File): Promise<string> => {
@@ -55,7 +55,8 @@ export const BookForm = ({ onAddBook }: BookFormProps) => {
           coverUrl = data.publicUrl;
         }
       } else {
-        alert('封面上傳失敗，已改為使用網址欄位內容');
+        // 上傳失敗時，改為使用輸入框的網址或 base64 預覽，不阻擋新增
+        console.warn('封面上傳失敗，改用網址欄位內容', uploadError);
       }
     }
 
@@ -111,21 +112,18 @@ export const BookForm = ({ onAddBook }: BookFormProps) => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="cover">封面（非必填）</Label>
-            <Input
-              id="cover"
-              type="url"
-              placeholder="https://example.com/cover.jpg（或以下方上傳/拍照）"
-              value={cover}
-              onChange={(e) => setCover(e.target.value)}
-            />
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <Input
+                id="cover"
+                type="url"
+                placeholder="https://example.com/cover.jpg"
+                value={cover}
+                onChange={(e) => setCover(e.target.value)}
+                className="flex-1"
+              />
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePickFile} />
-              <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePickFile} />
-              <Button type="button" variant="secondary" onClick={() => fileInputRef.current?.click()}>
-                從相簿選擇
-              </Button>
-              <Button type="button" variant="secondary" onClick={() => cameraInputRef.current?.click()}>
-                拍照新增
+              <Button type="button" variant="secondary" size="icon" aria-label="上傳圖片" onClick={() => fileInputRef.current?.click()}>
+                <ImagePlus size={18} />
               </Button>
             </div>
           </div>
