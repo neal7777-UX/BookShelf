@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Book } from '@/types/book';
 import { BookForm } from '@/components/BookForm';
 import { TabsFilter } from '@/components/TabsFilter';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { BookDetailDialog } from '@/components/BookDetailDialog';
+import { supabase } from '@/lib/supabase';
 
 export const Bookshelf = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -12,12 +13,28 @@ export const Bookshelf = () => {
   const [detailOpen, setDetailOpen] = useState(false);
   const [selected, setSelected] = useState<Book | null>(null);
 
-  const handleAddBook = (bookData: Omit<Book, 'id'>) => {
-    const newBook: Book = {
-      ...bookData,
-      id: Date.now().toString(),
+  useEffect(() => {
+    const fetchBooks = async () => {
+      const { data, error } = await supabase
+        .from('books')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error && data) {
+        setBooks(data as Book[]);
+      }
     };
-    setBooks([...books, newBook]);
+    fetchBooks();
+  }, []);
+
+  const handleAddBook = async (bookData: Omit<Book, 'id'>) => {
+    const { data, error } = await supabase
+      .from('books')
+      .insert(bookData)
+      .select()
+      .single();
+    if (!error && data) {
+      setBooks((prev) => [data as Book, ...prev]);
+    }
   };
 
   const handleSelectBook = (book: Book) => {
@@ -25,11 +42,27 @@ export const Bookshelf = () => {
     setDetailOpen(true);
   };
 
-  const handleSaveBook = (updated: Book) => {
-    setBooks((prev) => prev.map((b) => (b.id === updated.id ? updated : b)));
+  const handleSaveBook = async (updated: Book) => {
+    const { data, error } = await supabase
+      .from('books')
+      .update({
+        title: updated.title,
+        author: updated.author,
+        cover: updated.cover,
+        status: updated.status,
+        rating: updated.rating ?? 0,
+        notes: updated.notes ?? null,
+      })
+      .eq('id', updated.id)
+      .select()
+      .single();
+    if (!error && data) {
+      setBooks((prev) => prev.map((b) => (b.id === updated.id ? (data as Book) : b)));
+    }
   };
 
-  const handleDeleteBook = (id: string) => {
+  const handleDeleteBook = async (id: string) => {
+    await supabase.from('books').delete().eq('id', id);
     setBooks((prev) => prev.filter((b) => b.id !== id));
     if (selected?.id === id) {
       setSelected(null);
