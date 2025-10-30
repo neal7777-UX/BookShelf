@@ -11,6 +11,7 @@ export const Bookshelf = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [activeTab, setActiveTab] = useState('all');
   const [detailOpen, setDetailOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const [selected, setSelected] = useState<Book | null>(null);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export const Bookshelf = () => {
       .single();
     if (!error && data) {
       setBooks((prev) => [data as Book, ...prev]);
+      setAddOpen(false);
     }
   };
 
@@ -75,7 +77,7 @@ export const Bookshelf = () => {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-800">我的書架</h1>
-          <Dialog>
+          <Dialog open={addOpen} onOpenChange={setAddOpen}>
             <DialogTrigger asChild>
               <Button className="rounded-2xl">新增書籍</Button>
             </DialogTrigger>
